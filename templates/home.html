@@ -2,9 +2,161 @@
 <html>
 <head>
     <meta charset="UTF-8" />
-    <title>Home page!</title> 
+    <title>Home page!</title>
+    <style>
+        #canvas {
+            width: 100%;
+            height: 80vh;
+            border: 1px solid #ccc;
+            position: relative;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .note {
+            width: 180px;
+            height: 180px;
+            background-color: #fffa91;
+            border: 1px solid #999;
+            position: absolute;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .handle {
+            background-color: #f5d742;
+            padding: 10px;
+            cursor: grab;
+            user-select: none;
+            font-weight: bold;
+        }
+
+        .handle:active {
+            cursor: grabbing;
+        }
+
+        .content {
+            flex: 1;
+            padding: 10px;
+            overflow: auto;
+            cursor: text;
+            overflow-y: auto;
+            overflow-x: hidden;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            max-height: 200px;
+        }
+
+        .content:focus {
+            border-color: blue;
+            outline: none;
+        }
+    </style>
 </head>
 <body>
     <h1>Welcome, {{ user_name }}!</h1>
+    <button onclick="addNote()">Add Note</button>
+    <div id="canvas"></div>
+
+    <script>
+        let noteIdCounter = 0;
+        let debounceTimers = {};
+
+        function addNote() {
+            const newNote = {
+                id: "note-" + noteIdCounter++,
+                content: "New Note",
+                top: Math.random() * (canvas.clientHeight - 200) + "px",
+                left: Math.random() * (canvas.clientWidth - 200) + "px"
+            };
+            createNote(newNote);
+            saveNoteToServer(newNote);
+        }
+
+        function createNote(data) {
+            const canvas = document.getElementById("canvas");
+
+            const note = document.createElement("div");
+            note.className = "note";
+            note.id = data.id;
+
+            const handle = document.createElement("div");
+            handle.className = "handle";
+
+            const content = document.createElement("div");
+            content.className = "content";
+            content.contentEditable = true;
+            content.innerText = data.content;
+
+            note.style.top = data.top;
+            note.style.left = data.left;
+
+            // Save content when edited
+            content.addEventListener("input", () => {
+                data.content = content.innerText;
+
+                clearTimeout(debounceTimers[data.id]);
+                debounceTimers[data.id] = setTimeout(() => {
+                    saveNoteToServer(data);
+                }, 300); // 300ms after last keystroke
+                
+            });
+
+            // Dragging via handle only
+            handle.addEventListener("mousedown", function(e) {
+                e.preventDefault();
+
+                let offsetX = e.clientX - note.offsetLeft;
+                let offsetY = e.clientY - note.offsetTop;
+
+                function noteDrag(e) {
+                    note.style.left = (e.clientX - offsetX) + "px";
+                    note.style.top = (e.clientY - offsetY) + "px";
+                }
+
+                function stopDrag() {
+                    document.removeEventListener("mousemove", noteDrag);
+                    document.removeEventListener("mouseup", stopDrag);
+
+                    // Save new position
+                    data.top = note.style.top;
+                    data.left = note.style.left;
+                    saveNoteToServer(data);
+                }
+
+                document.addEventListener("mousemove", noteDrag);
+                document.addEventListener("mouseup", stopDrag);
+            });
+
+            note.appendChild(handle);
+            note.appendChild(content);
+            canvas.appendChild(note);
+        }
+
+        function saveNoteToServer(noteData) {
+            console.log("Saving note:", noteData);
+            fetch('/api/notes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(noteData)
+            });
+        }
+
+        function loadNotesFromServer() {
+            fetch('/api/notes')
+                .then(response => response.json())
+                .then(savedNotes => {
+                    savedNotes.forEach(data => createNote(data));
+
+                    // Update noteIdCounter to avoid duplicate IDs
+                    const ids = savedNotes.map(n => parseInt(n.id.split("-")[1]));
+                    noteIdCounter = ids.length > 0 ? Math.max(...ids) + 1 : 0;
+                });
+        }
+
+        // Load notes on page load
+        window.onload = loadNotesFromServer;
+    </script>
 </body>
 </html>

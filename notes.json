@@ -1,0 +1,26 @@
+[
+    {
+        "id": "note-0",
+        "content": "Programming notes:\n\n1) list = arrays",
+        "top": "13px",
+        "left": "32px"
+    },
+    {
+        "id": "note-1",
+        "content": "testing\n\n",
+        "top": "232px",
+        "left": "31px"
+    },
+    {
+        "id": "note-2",
+        "content": "IMP notes:\nmake website",
+        "top": "16px",
+        "left": "448px"
+    },
+    {
+        "id": "note-3",
+        "content": "test 3333333333",
+        "top": "12px",
+        "left": "245px"
+    }
+]
