@@ -11,6 +11,15 @@
       box-sizing: border-box;
     }
 
+    #canvas {
+        width: 100%;
+        height: 80vh;
+        border: 1px solid #ccc;
+        position: relative;
+        overflow: hidden;
+        margin-top: 5px;
+    }
+
     body {
       font-family: 'Montserrat', sans-serif;
       background-color: #111;
@@ -127,6 +136,7 @@
     <div class="main-content">
       <input type="text" placeholder="Enter your title here..." />
       <!-- You can add editable content or canvas here -->
+      <div id="canvas"></div>
       <p style="color:#777;">Start creating your notes, drawings, or projects here.</p>
     </div>
 
@@ -147,6 +157,181 @@
     </div>
 
   </div>
+
+  <script>
+    let noteCounter = 0;
+    let debounceTimers = {};
+
+    // Create a note element from data (for loading saved notes)
+    function createNote(data) {
+      const canvas = document.getElementById("canvas");
+      const noteId = data.id || "note-" + noteCounter++;
+
+      const defaultColor = "#232323"
+
+      // If a note with this ID already exists, skip to avoid duplicates
+      if (document.getElementById(noteId)) return;
+
+      const note = document.createElement("div");
+      note.className = "note";
+      note.id = noteId;
+      note.style.position = "absolute";
+      note.style.top = data.top || Math.random() * 300 + "px";
+      note.style.left = data.left || Math.random() * 500 + "px";
+      note.style.width = data.width || "150px";
+      note.style.height = data.height || "150px";
+      note.style.background = data.color || defaultColor;
+      note.style.border = "1px solid #999";
+      note.style.boxShadow = "2px 2px 5px rgba(0,0,0,0.3)";
+      note.style.resize = "both";
+      note.style.overflow = "auto";
+      note.style.display = "flex";
+      note.style.flexDirection = "column";
+      note.style.borderRadius = "8px";
+
+      // Handle for dragging
+      const handle = document.createElement("div");
+      handle.className = "handle";
+      handle.style.background = data.color || defaultColor;
+      handle.style.padding = "6px";
+      handle.style.cursor = "grab";
+      handle.style.userSelect = "none";
+      handle.style.fontWeight = "bold";
+
+      // Color picker
+      const colorInput = document.createElement("input");
+      colorInput.type = "color";
+      colorInput.value = data.color || "#242323";
+      colorInput.style.marginLeft = "6px";
+      colorInput.style.cursor = "pointer";
+      colorInput.style.width = "20px";
+      colorInput.style.height = "20px";
+      colorInput.style.border = "none";
+      colorInput.style.padding = "0";
+      colorInput.style.background = "none";
+      colorInput.style.outline = "none";
+
+      colorInput.addEventListener("input", () => {
+        note.style.backgroundColor = colorInput.value;
+        handle.style.backgroundColor = colorInput.value;
+        saveCurrentNote();
+      });
+
+      handle.appendChild(colorInput);
+
+      // Content div
+      const content = document.createElement("div");
+      content.className = "content";
+      content.contentEditable = true;
+      content.innerText = data.content || "New Note";
+      content.style.flex = "1";
+      content.style.padding = "8px";
+      content.style.overflowY = "auto";
+      content.style.overflowX = "hidden";
+      content.style.wordWrap = "break-word";
+      content.style.whiteSpace = "pre-wrap";
+      content.style.borderTop = "1px solid #ddd";
+
+      note.appendChild(handle);
+      note.appendChild(content);
+      canvas.appendChild(note);
+
+      const resizeObserver = new ResizeObserver(() => {
+        saveCurrentNote();
+      });
+      resizeObserver.observe(note);
+
+      // Debounced save on text input
+      content.addEventListener("input", () => {
+        clearTimeout(debounceTimers[noteId]);
+        debounceTimers[noteId] = setTimeout(saveCurrentNote, 300);
+      });
+
+      // Dragging logic
+      handle.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+        let offsetX = e.clientX - note.offsetLeft;
+        let offsetY = e.clientY - note.offsetTop;
+
+        function moveNote(e) {
+          note.style.left = (e.clientX - offsetX) + "px";
+          note.style.top = (e.clientY - offsetY) + "px";
+        }
+
+        function stopDrag() {
+          document.removeEventListener("mousemove", moveNote);
+          document.removeEventListener("mouseup", stopDrag);
+          saveCurrentNote();
+        }
+
+        document.addEventListener("mousemove", moveNote);
+        document.addEventListener("mouseup", stopDrag);
+      });
+
+      // Save the current note state
+      function saveCurrentNote() {
+        const noteData = {
+          id: noteId,
+          content: content.innerText,
+          top: note.style.top,
+          left: note.style.left,
+          color: colorInput.value,
+          width: note.style.width,
+          height: note.style.height
+        };
+        saveNoteToServer(noteData);
+      }
+    }
+
+    // Save note to server (POST)
+    function saveNoteToServer(noteData) {
+      fetch(`/api/notes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(noteData)
+      }).catch(console.error);
+    }
+
+    // Load all notes from server on page load
+    function loadNotesFromServer() {
+      fetch('/api/notes')
+        .then(response => {
+          if (!response.ok) throw new Error('Failed to fetch notes');
+          return response.json();
+        })
+        .then(savedNotes => {
+          if (!Array.isArray(savedNotes)) savedNotes = [];
+
+          savedNotes.forEach(data => createNote(data));
+
+          // Update noteCounter to avoid duplicate IDs
+          const ids = savedNotes
+            .map(n => {
+              if (typeof n.id === "string") {
+                const parts = n.id.split("-");
+                return parts.length > 1 ? parseInt(parts[1], 10) : NaN;
+              }
+              return NaN;
+            })
+            .filter(id => !isNaN(id));
+
+          noteCounter = ids.length > 0 ? Math.max(...ids) + 1 : 0;
+        })
+        .catch(error => {
+          console.error('Error loading notes:', error);
+        });
+    }
+
+    window.onload = loadNotesFromServer;
+
+    // Button to add new note (assuming it's the second button in sidebar-left)
+    document.querySelectorAll(".sidebar-left button")[1].addEventListener("click", () => {
+      createNote({ id: "note-" + noteCounter++, content: "New Note"});
+    });
+
+</script>
+
+
 
 </body>
 </html>

@@ -1,38 +1,20 @@
 [
     {
         "id": "note-0",
-        "content": "Programming notes:\n\n1) list = arrays",
-        "top": "29px",
-        "left": "312px"
+        "content": "yo\ntesting",
+        "top": "41px",
+        "left": "105px",
+        "color": "#000000",
+        "width": "150px",
+        "height": "150px"
     },
     {
         "id": "note-1",
-        "content": "testing\n\n",
-        "top": "243px",
-        "left": "110px"
-    },
-    {
-        "id": "note-2",
-        "content": "IMP notes:\nmake website",
-        "top": "25px",
-        "left": "678px"
-    },
-    {
-        "id": "note-3",
-        "content": "test 3333333333",
-        "top": "245px",
-        "left": "495px"
-    },
-    {
-        "id": "note-4",
-        "content": "hi gang",
-        "top": "251px",
-        "left": "876px"
-    },
-    {
-        "id": "note-5",
-        "content": "rus is gay",
-        "top": "24px",
-        "left": "1082px"
+        "content": "Programming notes:\n1)\n2)\n3).....................",
+        "top": "40px",
+        "left": "276px",
+        "color": "#242323",
+        "width": "427px",
+        "height": "151px"
     }
 ]
