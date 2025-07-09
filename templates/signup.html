@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Login Page</title>
+  <title>Sign Up Page</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
@@ -48,7 +48,7 @@
       color: #bbb;
     }
 
-    .login-box {
+    .signup-box {
       background: #1a1a1a;
       padding: 40px;
       border-radius: 12px;
@@ -56,8 +56,9 @@
       width: 300px;
     }
 
-    .login-box input[type="text"],
-    .login-box input[type="password"] {
+    .signup-box input[type="email"],
+    .signup-box input[type="text"],
+    .signup-box input[type="password"] {
       width: 100%;
       padding: 12px;
       margin: 10px 0;
@@ -67,7 +68,7 @@
       color: #fff;
     }
 
-    .login-box button {
+    .signup-box button {
       width: 100%;
       padding: 12px;
       background: #444;
@@ -80,21 +81,8 @@
       transition: background 0.3s;
     }
 
-    .login-box button:hover {
+    .signup-box button:hover {
       background: #666;
-    }
-
-    .signup-link {
-      display: block;
-      margin-top: 15px;
-      text-align: center;
-      font-size: 13px;
-      color: #aaa;
-      text-decoration: none;
-    }
-
-    .signup-link:hover {
-      color: #fff;
     }
   </style>
 </head>
@@ -102,18 +90,16 @@
 
   <a href="/welcome" class="home-icon">🏠</a>
 
-  <div class="welcome-bubble">Welcome</div>
+  <div class="welcome-bubble">Create your account</div>
   <div class="description">
-    Please log in to continue exploring your personal space.
+    Sign up with your email to start using your digital space.
   </div>
 
-  <div class="login-box">
-    <form action="/dashboard" method="POST">
-      <input type="text" name="username" placeholder="Username">
-      <input type="text" placeholder="Password">
-      <button type="submit">Log In</button>
-    </form>      
-    <a href="#" class="signup-link">I don't have an account</a>
+  <div class="signup-box">
+    <input type="email" placeholder="Email">
+    <input type="text" placeholder="Create Username">
+    <input type="password" placeholder="Create Password">
+    <button>Verify Email</button>
   </div>
 
 </body>

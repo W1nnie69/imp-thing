@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mural Style Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #1c1c1c;
+      color: #fff;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 230px;
+      background-color: #111;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #333;
+    }
+
+    .sidebar a {
+      color: #ccc;
+      text-decoration: none;
+      margin: 12px 0;
+      padding: 10px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      transition: background 0.3s;
+    }
+
+    .sidebar a:hover {
+      background-color: #333;
+      color: #fff;
+    }
+
+    .sidebar a .icon {
+      margin-right: 10px;
+    }
+
+    .main {
+      flex-grow: 1;
+      padding: 30px;
+      overflow-y: auto;
+    }
+
+    .title {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    .note-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .note-card {
+      background: #2a2a2a;
+      border-radius: 12px;
+      padding: 20px;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .note-card:hover {
+      transform: scale(1.03);
+    }
+
+    .note-card.locked {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .note-card.locked::after {
+      content: "🔒";
+      position: absolute;
+      top: 12px;
+      right: 15px;
+      font-size: 16px;
+    }
+
+    .note-card.opened {
+      background-color: #3a3a3a;
+    }
+
+    .note-buttons {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .note-buttons button {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .accept {
+      background-color: #4caf50;
+      color: white;
+    }
+
+    .decline {
+      background-color: #f44336;
+      color: white;
+    }
+
+    .home-icon {
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <form action="/workspace" method="post">
+      <a href="/dashboard"><span class="icon home-icon">🏠</span>Home</a>
+      <!-- <a href="#">Create Workspace</a> -->
+
+      <!-- Fucking stupid cant use <a> for post req -->
+      <!-- Can you convert all the <a> links to buttons like the one below -->
+      <!-- i cant make the button loook like the current sidebar (im dogshit) -->
+      <button type="submit" style="background:none; border:none; padding:0; color:#ccc; cursor:pointer;">Create Workspace</button>
+      <a href="#">Home</a>
+      <a href="#">Recent</a>
+      <a href="#">Starred</a>
+      <a href="#">Templates</a>
+      <a href="#">Workspace 1</a>
+      <a href="#">Workspace 2</a>
+    </form>
+    
+  </div>
+
+  <!-- Main Content -->
+  <div class="main">
+    <div class="title">Your Subnotes</div>
+
+    <div class="note-grid">
+
+      <!-- Unlocked Subnote -->
+      <div class="note-card opened">
+        <strong>Subnote 1: New Idea</strong>
+        <p style="font-size: 13px; margin-top: 8px;">A user has submitted this note.</p>
+        <div class="note-buttons">
+          <button class="accept">Accept</button>
+          <button class="decline">Decline</button>
+        </div>
+      </div>
+
+      <!-- Locked Notes -->
+      <div class="note-card locked">
+        <strong>Subnote 2: Private</strong>
+      </div>
+
+      <div class="note-card locked">
+        <strong>Subnote 3: Archived</strong>
+      </div>
+
+      <div class="note-card locked">
+        <strong>Subnote 4: Hidden</strong>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>

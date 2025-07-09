@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Creative Workspace</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: #111;
+      color: #eee;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .home-icon {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 24px;
+      text-decoration: none;
+      color: #ccc;
+      z-index: 10;
+    }
+
+    .home-icon:hover {
+      color: #fff;
+    }
+
+    .sidebar-left {
+      width: 200px;
+      background-color: #1a1a1a;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      border-right: 1px solid #333;
+      overflow-y: auto;
+    }
+
+    .sidebar-left button {
+      padding: 10px;
+      background: #2c2c2c;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .sidebar-left button:hover {
+      background: #444;
+    }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 30px;
+      overflow-y: auto;
+    }
+
+    .main-content input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      background: #2b2b2b;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 16px;
+    }
+
+    .sidebar-right {
+      width: 250px;
+      background-color: #1a1a1a;
+      padding: 20px;
+      border-left: 1px solid #333;
+      overflow-y: auto;
+    }
+
+    .sidebar-right h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: #ccc;
+    }
+
+    .suggestion {
+      margin-bottom: 15px;
+      background: #2a2a2a;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .suggestion a {
+      color: #80d8ff;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .suggestion a:hover {
+      text-decoration: underline;
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #555;
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #222;
+    }
+  </style>
+</head>
+<body>
+
+  <a href="welcome.html" class="home-icon">🏠</a>
+
+  <div class="sidebar-left">
+    <button>Create Drawing</button>
+    <button>Add Text</button>
+    <button>Insert Image</button>
+    <button>Insert Table</button>
+    <button>Highlight</button>
+  </div>
+
+  <div class="main-content">
+    <input type="text" placeholder="Enter your title here..." />
+    <p style="color: #aaa;">Start building your content with the tools on the left. You can draw, add text, images, and more.</p>
+    <div style="height: 1000px;"></div> <!-- Simulates scrollable space -->
+  </div>
+
+  <div class="sidebar-right">
+    <h3>Suggestions</h3>
+    <div class="suggestion">
+      <strong>Khan Academy</strong><br>
+      <a href="https://www.khanacademy.org" target="_blank">Visit Site</a>
+    </div>
+    <div class="suggestion">
+      <strong>The Organic Chemistry Tutor</strong><br>
+      <a href="https://www.youtube.com/@TheOrganicChemistryTutor" target="_blank">YouTube Channel</a>
+    </div>
+    <div class="suggestion">
+      <strong>CrashCourse</strong><br>
+      <a href="https://www.youtube.com/@CrashCourse" target="_blank">YouTube Channel</a>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>HiveMind Cool Theme</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #121212, #1e1e1e);
+      color: #e0e0e0;
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      padding: 20px 40px;
+    }
+
+    .home-icon {
+      font-size: 28px;
+      margin-right: 15px;
+    }
+
+    h2 {
+      font-size: 26px;
+      background: linear-gradient(to right, #3a3a3a, #5a5a5a);
+      padding: 10px 20px;
+      border-radius: 30px;
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    .top-buttons {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: row; /* side by side */
+      gap: 12px; /* space between buttons */
+    }
+
+    .top-buttons button {
+      padding: 10px 20px;
+      background: linear-gradient(to right, #888, #aaa);
+      border: none;
+      border-radius: 30px;
+      color: #111;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.05);
+    }
+
+    .top-buttons button:hover {
+      background: linear-gradient(to right, #ccc, #eee);
+      transform: scale(1.05);
+      box-shadow: 0 0 12px rgba(200, 200, 200, 0.4);
+    }
+
+    .tabs-container {
+      margin: 50px auto;
+      max-width: 900px;
+      padding: 0 20px;
+    }
+
+    .tab-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .tab-buttons button {
+      padding: 12px 25px;
+      background: #2c2c2c;
+      border: none;
+      border-radius: 25px;
+      color: #ccc;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease, color 0.3s ease;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.05);
+    }
+
+    .tab-buttons button.active {
+      background: linear-gradient(to right, #999, #bbb);
+      color: #111;
+      font-weight: bold;
+      box-shadow: 0 0 10px rgba(200, 200, 200, 0.3);
+    }
+
+    .tab-content {
+      background: #222;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+      display: none;
+      animation: fade 0.3s ease-in-out;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .tab-content p {
+      color: #ddd;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="home-icon">🏠</div>
+    <h2>WELCOME TO HIVEMIND</h2>
+  </header>
+
+  <!-- Top Buttons (now side by side) -->
+  <div class="top-buttons">
+    <form action="/signup">
+      <button type="submit">Sign-up Now!</button>
+    </form>
+    <form action="/login">
+      <button type="submit">Log-In</button>
+    </form>
+  </div>
+
+  <!-- Tabs Section -->
+  <div class="tabs-container">
+    <div class="tab-buttons">
+      <button class="tab-btn active" onclick="showTab(0)">How it works</button>
+      <button class="tab-btn" onclick="showTab(1)">Features</button>
+      <button class="tab-btn" onclick="showTab(2)">Use cases</button>
+    </div>
+
+    <div class="tab-content active">
+      <p><strong>Contribute:</strong> 'Creator' assigns subtopics, 'noters' make high-quality notes.</p>
+      <p><strong>Review:</strong> Notes are peer-reviewed and accepted by 'creator'.</p>
+      <p><strong>Access:</strong> Successful 'noters' are rewarded with access to notes!</p>
+    </div>
+
+    <div class="tab-content">
+      <p>✅ Contribution-based access</p>
+      <p>🧠 Smart suggestions (Khan Academy, etc.)</p>
+      <p>🔗 Embedded resources and definitions</p>
+      <p>🧭 Mindmap and outline views</p>
+      <p>📝 Quizlet-style auto-generated flashcards</p>
+    </div>
+
+    <div class="tab-content">
+      <p>"HiveMind helped our class ace finals — together."</p>
+      <p>"I finally understood organic chemistry thanks to my classmates' notes."</p>
+    </div>
+  </div>
+
+  <!-- Tabs Script -->
+  <script>
+    function showTab(index) {
+      const contents = document.querySelectorAll('.tab-content');
+      const buttons = document.querySelectorAll('.tab-btn');
+
+      contents.forEach((content, i) => {
+        content.classList.toggle('active', i === index);
+      });
+
+      buttons.forEach((btn, i) => {
+        btn.classList.toggle('active', i === index);
+      });
+    }
+  </script>
+
+</body>
+</html>

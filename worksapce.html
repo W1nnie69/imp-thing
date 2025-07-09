@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mural Main Page Clone</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: #121212;
+      color: #f0f0f0;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 230px;
+      background-color: #181818;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #333;
+    }
+
+    .sidebar a {
+      color: #ccc;
+      text-decoration: none;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      transition: background 0.2s;
+    }
+
+    .sidebar a:hover {
+      background-color: #333;
+      color: #fff;
+    }
+
+    .sidebar .home-icon {
+      font-size: 18px;
+      margin-right: 8px;
+    }
+
+    .main {
+      flex-grow: 1;
+      padding: 30px;
+      overflow-y: auto;
+    }
+
+    .main h2 {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    .subnotes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .subnote {
+      background-color: #242424;
+      padding: 20px;
+      border-radius: 10px;
+      position: relative;
+      transition: transform 0.2s;
+      cursor: pointer;
+    }
+
+    .subnote:hover {
+      transform: scale(1.02);
+    }
+
+    .notification-dot {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background-color: red;
+      color: white;
+      font-size: 10px;
+      padding: 4px 7px;
+      border-radius: 50%;
+      font-weight: bold;
+    }
+
+    .subnote.open {
+      background-color: #2f2f2f;
+    }
+
+    .note-buttons {
+      display: none;
+      margin-top: 15px;
+      gap: 10px;
+    }
+
+    .subnote.open .note-buttons {
+      display: flex;
+    }
+
+    .note-buttons button {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #fff;
+    }
+
+    .accept {
+      background-color: #4caf50;
+    }
+
+    .decline {
+      background-color: #f44336;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <a href="welcome.html"><span class="home-icon">🏠</span>Home</a>
+    <a href="#">Create Workspace</a>
+    <a href="#">Home</a>
+    <a href="#">Recent</a>
+    <a href="#">Starred</a>
+    <a href="#">Templates</a>
+    <a href="#">Workspace 1</a>
+    <a href="#">Workspace 2</a>
+  </div>
+
+  <div class="main">
+    <h2>Your Subnotes</h2>
+    <div class="subnotes-grid">
+
+      <!-- Subnote with Notification -->
+      <div class="subnote" onclick="toggleNote(this)">
+        <strong>Subnote 1: New Submission</strong>
+        <span class="notification-dot">1</span>
+        <div class="note-buttons">
+          <button class="accept">Accept</button>
+          <button class="decline">Decline</button>
+        </div>
+      </div>
+
+      <!-- Locked or Normal Subnotes -->
+      <div class="subnote">
+        <strong>Subnote 2: Private</strong>
+        <p style="color:#aaa; margin-top:8px;">🔒 Locked by creator</p>
+      </div>
+
+      <div class="subnote">
+        <strong>Subnote 3: Archived</strong>
+        <p style="color:#aaa; margin-top:8px;">🔒 Archived content</p>
+      </div>
+
+      <div class="subnote">
+        <strong>Subnote 4: Info Only</strong>
+        <p style="color:#aaa; margin-top:8px;">Read-only subnote</p>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    function toggleNote(element) {
+      const alreadyOpen = element.classList.contains("open");
+      document.querySelectorAll('.subnote').forEach(note => note.classList.remove("open"));
+      if (!alreadyOpen) {
+        element.classList.add("open");
+      }
+    }
+  </script>
+
+</body>
+</html>
+

@@ -4,9 +4,9 @@ import os
 
 app = Flask(__name__)
 
-def load_notes():
-    if os.path.exists("notes.json"):
-        with open("notes.json", "r") as f:
+def load_workspaces():
+    if os.path.exists("workspaces.json"):
+        with open("workspaces.json", "r") as f:
             content = f.read().strip()
             if content:
                 try:
@@ -21,6 +21,10 @@ def load_notes():
                 return []
     else:
         return []
+
+def write_workspaces_to_file(workspaces):
+    with open("workspaces.json", "w") as f:
+        json.dump(workspaces, f, indent=4)
     
 
 def write_notes_to_file(notes):
@@ -36,7 +40,12 @@ def get_notes():
 
 @app.route("/")
 def login_redirect():
-    return redirect(url_for('login'))
+    return redirect(url_for('welcome'))
+
+
+@app.route("/welcome")
+def welcome():
+    return render_template("welcome.html")
 
 
 @app.route("/login")
@@ -44,10 +53,20 @@ def login():
     return render_template("login.html")
 
 
-@app.route("/home", methods=["POST"])
-def home():
+@app.route("/signup")
+def signup():
+    return render_template("signup.html")
+
+
+@app.route("/dashboard", methods=["POST"])
+def dashboard():
     username = request.form["username"]
-    return render_template("home.html", user_name=username)
+    return render_template("dashboard.html", user_name=username)
+
+
+@app.route("/workspace", methods=["POST"])
+def workspace():
+    return render_template("workspace.html")
 
 
 @app.route("/api/notes", methods=["POST"])
