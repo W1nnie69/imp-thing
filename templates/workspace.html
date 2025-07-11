@@ -161,6 +161,8 @@
   <script>
     let noteCounter = 0;
     let debounceTimers = {};
+    let debounceTimer;
+    let tooltipHideTimeout;
 
     // Create a note element from data (for loading saved notes)
     function createNote(data) {
@@ -244,7 +246,9 @@
       // Debounced save on text input
       content.addEventListener("input", () => {
         clearTimeout(debounceTimers[noteId]);
-        debounceTimers[noteId] = setTimeout(saveCurrentNote, 300);
+        debounceTimers[noteId] = setTimeout(() => {
+          saveCurrentNote();
+        }, 300);
       });
 
       // Dragging logic
@@ -322,14 +326,84 @@
         });
     }
 
-    window.onload = loadNotesFromServer;
+
+    function fetchResource(phrase, x, y) {
+      fetch(`/api/duckduckgo?q=${encodeURIComponent(phrase)}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.AbstractText) {
+            showTooltip(data.AbstractText, x, y);
+          } else if (data.RelatedTopics && data.RelatedTopics.length > 0) {
+            showTooltip(data.RelatedTopics[0].Text, x, y);
+          } else {
+            showTooltip("No result found.", x, y);
+          }
+        })
+        .catch(() => showTooltip("Error fetching result.", x, y));
+    }
+
+
+    function showTooltip(text, x, y) {
+      let tooltip = document.getElementById("tooltip");
+      if (!tooltip) {
+        tooltip = document.createElement("div");
+        tooltip.id = "tooltip";
+        tooltip.style.position = "absolute";
+        tooltip.style.maxWidth = "250px";
+        tooltip.style.padding = "10px";
+        tooltip.style.background = "#333";
+        tooltip.style.color = "#fff";
+        tooltip.style.borderRadius = "6px";
+        tooltip.style.fontSize = "14px";
+        tooltip.style.zIndex = "1000";
+        // tooltip.style.pointerEvents = "none";
+        tooltip.style.userSelect = "text";
+        document.body.appendChild(tooltip);
+      }
+      tooltip.innerText = text;
+      tooltip.style.left = `${x + 10}px`;
+      tooltip.style.top = `${y + 10}px`;
+      tooltip.style.display = "block";
+
+      // Clear previous hide timeout if any
+      if (tooltipHideTimeout) clearTimeout(tooltipHideTimeout);
+
+      // Hide tooltip after 5 seconds
+      tooltipHideTimeout = setTimeout(() => {
+        tooltip.style.display = "none";
+      }, 10000);
+    }
+
+
+    document.addEventListener("mouseup", (e) => {
+      const selection = window.getSelection();
+      const selectedText = selection.toString().trim();
+
+      clearTimeout(debounceTimer);
+
+      if (selectedText.length > 0) {
+        debounceTimer = setTimeout(() => {
+          fetchResource(selectedText, e.pageX, e.pageY);
+        }, 1000); // wait 300ms after last selection change
+      } else {
+        // Hide tooltip if no selection
+        const tooltip = document.getElementById("tooltip");
+        if (tooltip) {
+          tooltip.style.display = "none";
+        }
+      }
+    });
+
+
+
+    window.onload = loadNotesFromServer();
 
     // Button to add new note (assuming it's the second button in sidebar-left)
     document.querySelectorAll(".sidebar-left button")[1].addEventListener("click", () => {
       createNote({ id: "note-" + noteCounter++, content: "New Note"});
     });
 
-</script>
+  </script>
 
 
 

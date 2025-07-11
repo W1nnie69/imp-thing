@@ -1,8 +1,12 @@
 from flask import Flask, render_template, url_for, redirect, request, jsonify
 import json
 import os
+import requests
 
 app = Flask(__name__)
+
+import os
+print("Current working directory:", os.getcwd())
 
 def load_workspaces():
     if os.path.exists("workspaces.json"):
@@ -22,23 +26,31 @@ def load_workspaces():
     else:
         return []
     
+
 def load_notes():
+    print("Attempting to load notes...")  # <---- add this
     if os.path.exists("notes.json"):
         with open("notes.json", "r") as f:
             content = f.read().strip()
+            print("Raw notes.json content:", content)  # <---- add this too
             if content:
                 try:
                     data = json.loads(content)
+                    print("Parsed data:", data)  # <---- and this
                     if isinstance(data, list):
                         return data
                     else:
                         return []
-                except json.JSONDecodeError:
+                except json.JSONDecodeError as e:
+                    print("JSON Decode Error:", e)
                     return []
             else:
+                print("notes.json is empty")
                 return []
     else:
+        print("notes.json file not found")
         return []
+
 
 def write_workspaces_to_file(workspaces):
     with open("workspaces.json", "w") as f:
@@ -81,7 +93,6 @@ def workspace():
     return render_template("workspace.html")
 
 
-
 @app.route("/api/notes", methods=["GET"])
 def get_notes():
     notes = load_notes()
@@ -109,6 +120,18 @@ def save_notes():
     write_notes_to_file(notes)
 
     return jsonify({"status": "saved"})
+
+
+@app.route("/api/duckduckgo")
+def proxy_duckduckgo():
+    query = request.args.get("q")
+    if not query:
+        return jsonify({"error": "Missing query"}), 400
+    
+    url = f"https://api.duckduckgo.com/?q={query}&format=json&no_redirect=1&no_html=1"
+    response = requests.get(url)
+    
+    return response.json()
 
 
 if __name__ == '__main__':

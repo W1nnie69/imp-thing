@@ -1,20 +1,38 @@
 [
     {
         "id": "note-0",
-        "content": "yo\ntesting",
-        "top": "41px",
-        "left": "105px",
-        "color": "#000000",
-        "width": "150px",
-        "height": "150px"
+        "content": "test",
+        "top": "22px",
+        "left": "30px",
+        "color": "#242323",
+        "width": "99px",
+        "height": "90px"
     },
     {
         "id": "note-1",
-        "content": "Programming notes:\n1)\n2)\n3).....................",
-        "top": "40px",
-        "left": "276px",
+        "content": "Programming notes:\n\n1) Python lists\n2) Python functions",
+        "top": "23px",
+        "left": "457px",
         "color": "#242323",
-        "width": "427px",
-        "height": "151px"
+        "width": "231px",
+        "height": "191px"
+    },
+    {
+        "id": "note-3",
+        "content": "amino acids",
+        "top": "23px",
+        "left": "188px",
+        "color": "#242323",
+        "width": "210px",
+        "height": "154px"
+    },
+    {
+        "id": "note-2",
+        "content": "apple pie",
+        "top": "18px",
+        "left": "743px",
+        "color": "#242323",
+        "width": "213px",
+        "height": "195px"
     }
 ]
