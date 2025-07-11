@@ -28,15 +28,12 @@ def load_workspaces():
     
 
 def load_notes():
-    print("Attempting to load notes...")  # <---- add this
     if os.path.exists("notes.json"):
         with open("notes.json", "r") as f:
             content = f.read().strip()
-            print("Raw notes.json content:", content)  # <---- add this too
             if content:
                 try:
                     data = json.loads(content)
-                    print("Parsed data:", data)  # <---- and this
                     if isinstance(data, list):
                         return data
                     else:
@@ -135,4 +132,4 @@ def proxy_duckduckgo():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
