@@ -3,5 +3,6 @@
     {"username":"mickey", "password":"password"},
     {"username":"yixian", "password":"password"},
     {"username":"ryan", "password":"password"},
-    {"username":"jasmin", "password":"password"}
+    {"username":"jasmin", "password":"password"},
+    {"username":"test", "password":"password"}
 ]

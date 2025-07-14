@@ -87,7 +87,7 @@
     }
 
     .sidebar-right {
-      width: 250px;
+      width: 350px;
       background-color: #1c1c1c;
       padding: 20px;
       border-left: 1px solid #2a2a2a;
@@ -117,11 +117,31 @@
       text-decoration: underline;
     }
 
+    .suggestion p {
+      white-space: pre-wrap;
+    }
+
+    .loading-spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #333;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
   </style>
 </head>
 <body>
 
-  <a href="#" class="home-icon">🏠</a>
+  <a href="/dashboard" class="home-icon">🏠</a>
 
   <div class="container">
 
@@ -130,30 +150,30 @@
       <button>Add Text</button>
       <button>Insert Image</button>
       <button>Insert Table</button>
-      <button>Highlight</button>
+      <button id="askAiButton" onclick="sendNotesToAIHelper()">Ask AI</button>
     </div>
 
     <div class="main-content">
-      <input type="text" placeholder="Enter your title here..." />
+      <!-- <input type="text" placeholder="Enter your title here..." /> -->
       <!-- You can add editable content or canvas here -->
+       <p style="color:#777;">Start creating your notes, drawings, or projects here.</p>
       <div id="canvas"></div>
-      <p style="color:#777;">Start creating your notes, drawings, or projects here.</p>
+      
     </div>
 
     <div class="sidebar-right">
-      <h3>Suggestions</h3>
+      <h3>Ai-Suggestions</h3>
       <div class="suggestion">
-        <strong>Khan Academy</strong><br>
-        <a href="https://www.khanacademy.org" target="_blank">Visit Site</a>
+        <p></p>
       </div>
-      <div class="suggestion">
+      <!-- <div class="suggestion">
         <strong>The Organic Chemistry Tutor</strong><br>
         <a href="https://www.youtube.com/@TheOrganicChemistryTutor" target="_blank">YouTube Channel</a>
       </div>
       <div class="suggestion">
         <strong>CrashCourse</strong><br>
         <a href="https://www.youtube.com/@CrashCourse" target="_blank">YouTube Channel</a>
-      </div>
+      </div> -->
     </div>
 
   </div>
@@ -248,7 +268,7 @@
         clearTimeout(debounceTimers[noteId]);
         debounceTimers[noteId] = setTimeout(() => {
           saveCurrentNote();
-        }, 300);
+        }, 500); //500ms delay when saving
       });
 
       // Dragging logic
@@ -375,6 +395,43 @@
     }
 
 
+    function sendNotesToAIHelper() {
+      const button = document.getElementById("askAiButton");
+      // Save original button content to restore later
+      const originalContent = button.innerHTML;
+
+      // Replace button content with spinner
+      button.innerHTML = '<span class="loading-spinner"></span> Loading...';
+      button.disabled = true;
+
+      const notes = [];
+      document.querySelectorAll(".note .content").forEach(contentDiv => {
+        notes.push(contentDiv.innerText);
+      });
+
+      fetch("/api/askai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notes })
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log("AI Suggestions:", data.suggestions);
+
+        const suggestionElement = document.querySelector(".sidebar-right .suggestion p");
+        suggestionElement.innerText = data.suggestions;
+      })
+      .catch(err => console.error("Fetch failed:", err))
+      .finally(() => {
+        // Restore original button content
+        button.innerHTML = originalContent;
+        button.disabled = false;
+      });
+    };
+   
+
+
+
     document.addEventListener("mouseup", (e) => {
       const selection = window.getSelection();
       const selectedText = selection.toString().trim();
@@ -384,7 +441,7 @@
       if (selectedText.length > 0) {
         debounceTimer = setTimeout(() => {
           fetchResource(selectedText, e.pageX, e.pageY);
-        }, 1000); // wait 300ms after last selection change
+        }, 1000); // wait 1000ms after last selection change
       } else {
         // Hide tooltip if no selection
         const tooltip = document.getElementById("tooltip");
