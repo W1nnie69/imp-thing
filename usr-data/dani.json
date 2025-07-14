@@ -1,0 +1,35 @@
+[
+    {
+        "workspace_id": 1,
+        "workspace_name": "Default",
+        "notes": [
+            {
+                "id": "note-0",
+                "content": "Javascript syntax:\n\nevery line ends with ;",
+                "top": "42px",
+                "left": "346px",
+                "color": "#242323",
+                "width": "199px",
+                "height": "176px"
+            },
+            {
+                "id": "note-2",
+                "content": "Python notes:\n\n1) list = [1,2,3]\n2) dict = [\"key\" : \"value\"]",
+                "top": "41px",
+                "left": "103px",
+                "color": "#242323",
+                "width": "217px",
+                "height": "177px"
+            },
+            {
+                "id": "note-3",
+                "content": "WOW it works!",
+                "top": "33px",
+                "left": "610px",
+                "color": "#242323",
+                "width": "150px",
+                "height": "150px"
+            }
+        ]
+    }
+]

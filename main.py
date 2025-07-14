@@ -1,12 +1,46 @@
-from flask import Flask, render_template, url_for, redirect, request, jsonify
+from flask import Flask, render_template, url_for, redirect, request, jsonify, session, flash
 import json
 import os
 import requests
+import deepseek as ds
 
 app = Flask(__name__)
+app.secret_key = 'super-secret-key-123'
 
-import os
+
 print("Current working directory:", os.getcwd())
+
+
+def load_users():
+    with open('users.json', 'r') as f:
+        return json.load(f)
+    
+    return []
+
+
+def load_usr_data(username):
+    filepath = f"./usr-data/{username}.json"
+    if os.path.exists(filepath):
+        with open(filepath, "r") as f:
+            return json.load(f)
+        
+    else:
+        # Create default workspace if none exists
+        default_workspace = [{
+            "workspace_id": 1,
+            "workspace_name": "Default",
+            "notes": []
+        }]
+        with open(filepath, "w") as f:
+            json.dump(default_workspace, f, indent=4)
+        return default_workspace
+        
+
+def write_user_data(username, data):
+    filepath = f"./usr-data/{username}.json"
+    with open(filepath, "w") as f:
+        json.dump(data, f, indent=4)
+
 
 def load_workspaces():
     if os.path.exists("workspaces.json"):
@@ -69,8 +103,21 @@ def welcome():
     return render_template("welcome.html")
 
 
-@app.route("/login")
+@app.route("/login", methods=["GET", "POST"])
 def login():
+    if request.method == "POST":
+        username = request.form["username"]
+        # password = request.form["password"]
+        users = load_users()
+
+        for user in users:
+            if user["username"] == username:
+                session["username"] = username
+                return redirect(url_for("dashboard"))
+            
+        flash("Invalid username or password")   
+        return redirect(url_for("login"))
+
     return render_template("login.html")
 
 
@@ -79,10 +126,11 @@ def signup():
     return render_template("signup.html")
 
 
-@app.route("/dashboard", methods=["POST"])
+@app.route("/dashboard")
 def dashboard():
-    username = request.form["username"]
-    return render_template("dashboard.html", user_name=username)
+    if "username" not in session:
+        return redirect(url_for("login"))
+    return render_template("dashboard.html", username=session["username"])
 
 
 @app.route("/workspace")
@@ -92,30 +140,41 @@ def workspace():
 
 @app.route("/api/notes", methods=["GET"])
 def get_notes():
-    notes = load_notes()
+    username = session.get("username")
+    if not username:
+        return jsonify([])
+    
+    data = load_usr_data(username)
+    notes = []
+
+    for ws in data:
+        notes.extend(ws["notes"])
+
     return jsonify(notes)
 
 
 @app.route("/api/notes", methods=["POST"])
 def save_notes():
     note = request.get_json()
+    username = session.get("username")
+    if not username:
+        return jsonify({"error": "Not logged in"}), 401
+    
+    data = load_usr_data(username)
+    workspace_id = 1
 
-    # Validate required fields (optional)
-    required_keys = {'id', 'content', 'top', 'left', 'width', 'height', 'color'}
-    if not required_keys.issubset(note.keys()):
-        return jsonify({"error": "Missing required note fields"}), 400
+    for ws in data:
+        if ws["workspace_id"] == workspace_id:
+            for n in ws["notes"]:
+                if n["id"] == note["id"]:
+                    n.update(note)
+                    break
 
-    notes = load_notes()
+            else:
+                ws["notes"].append(note)
+            break
 
-    # Remove any existing note with the same ID
-    notes = [n for n in notes if n['id'] != note['id']]
-
-    # Append the new/updated note
-    notes.append(note)
-
-    # Write back clean, valid JSON array
-    write_notes_to_file(notes)
-
+    write_user_data(username, data)
     return jsonify({"status": "saved"})
 
 
@@ -130,6 +189,22 @@ def proxy_duckduckgo():
     
     return response.json()
 
+
+@app.route("/api/askai", methods=["POST"])
+def ask_deepseek():
+    data = request.get_json()
+    data = data['notes']
+    data = str(data)
+    print(data)
+    response = ds.build_request(data)
+    if not response:
+        print("Something went wrong, no response from ai")
+        return jsonify({"error": "No response from AI"}), 500
+
+
+    else:
+        print(response)
+        return jsonify({"suggestions": response})
 
 if __name__ == '__main__':
     app.run(debug=False)

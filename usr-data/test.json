@@ -1,0 +1,35 @@
+[
+    {
+        "workspace_id": 1,
+        "workspace_name": "Default",
+        "notes": [
+            {
+                "id": "note-0",
+                "content": "test user",
+                "top": "48px",
+                "left": "126px",
+                "color": "#242323",
+                "width": "150px",
+                "height": "150px"
+            },
+            {
+                "id": "note-1",
+                "content": "wow",
+                "top": "52px",
+                "left": "335px",
+                "color": "#242323",
+                "width": "150px",
+                "height": "150px"
+            },
+            {
+                "id": "note-2",
+                "content": "New Note",
+                "top": "59px",
+                "left": "560px",
+                "color": "#242323",
+                "width": "150px",
+                "height": "150px"
+            }
+        ]
+    }
+]

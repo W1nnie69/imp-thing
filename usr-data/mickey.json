@@ -1,0 +1,26 @@
+[
+    {
+        "workspace_id": 1,
+        "workspace_name": "Default",
+        "notes": [
+            {
+                "id": "note-0",
+                "content": "hi boss",
+                "top": "22px",
+                "left": "84px",
+                "color": "#242323",
+                "width": "150px",
+                "height": "150px"
+            },
+            {
+                "id": "note-1",
+                "content": "New Note",
+                "top": "26px",
+                "left": "292px",
+                "color": "#ff8040",
+                "width": "633px",
+                "height": "353px"
+            }
+        ]
+    }
+]
