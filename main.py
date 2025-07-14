@@ -1,12 +1,21 @@
-from flask import Flask, render_template, url_for, redirect, request, jsonify
+from flask import Flask, render_template, url_for, redirect, request, jsonify, session, flash
 import json
 import os
 import requests
 
 app = Flask(__name__)
+app.secret_key = 'super-secret-key-123'
 
-import os
+
 print("Current working directory:", os.getcwd())
+
+
+def load_users():
+    with open('users.json', 'r') as f:
+        return json.load(f)
+    
+    return []
+
 
 def load_workspaces():
     if os.path.exists("workspaces.json"):
@@ -72,8 +81,21 @@ def welcome():
     return render_template("welcome.html")
 
 
-@app.route("/login")
+@app.route("/login", methods=["GET", "POST"])
 def login():
+    if request.method == "POST":
+        username = request.form["username"]
+        # password = request.form["password"]
+        users = load_users()
+
+        for user in users:
+            if user["username"] == username:
+                session["username"] = username
+                return redirect(url_for("dashboard"))
+            
+        flash("Invalid username or password")   
+        return redirect(url_for("login"))
+
     return render_template("login.html")
 
 
@@ -82,10 +104,11 @@ def signup():
     return render_template("signup.html")
 
 
-@app.route("/dashboard", methods=["POST"])
+@app.route("/dashboard")
 def dashboard():
-    username = request.form["username"]
-    return render_template("dashboard.html", user_name=username)
+    if "username" not in session:
+        return redirect(url_for("login"))
+    return render_template("dashboard.html", username=session["username"])
 
 
 @app.route("/workspace")
