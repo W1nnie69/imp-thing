@@ -1,6 +1,7 @@
 from flask import Flask, render_template, url_for, redirect, request, jsonify, session, flash
 import json
 import os
+import time
 import requests
 import deepseek as ds
 
@@ -16,6 +17,11 @@ def load_users():
         return json.load(f)
     
     return []
+
+
+def dump_json(new_json):
+    with open("users.json", "w") as f:
+        json.dump(new_json, f, indent=4)
 
 
 def load_usr_data(username):
@@ -124,8 +130,34 @@ def login():
     return render_template("login.html")
 
 
-@app.route("/signup")
+@app.route("/signup" , methods=["GET", "POST"])
 def signup():
+    if request.method == "POST":
+        email = request.form["email"]
+        username = request.form["username"]
+        password = request.form["password"]
+
+        user_data = load_users()
+
+        new_user_data = {
+            "username": username,
+            "password": password
+        }
+
+        if new_user_data in user_data:
+            print("User alr exist")
+            flash("User already exists.")
+
+        else:
+            print("Making account.....")
+            print(f"Email: {email}\nUsername: {username}\nPassword: {password} ")
+            user_data.append(new_user_data)
+            dump_json(user_data)
+            flash("Account Successfully created. Page will redirect in 3 seconds")
+            return render_template("acc_creation_success.html")
+
+            
+
     return render_template("signup.html")
 
 
