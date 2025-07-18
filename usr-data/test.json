@@ -2,6 +2,7 @@
     {
         "workspace_id": 1,
         "workspace_name": "Default",
+        "class": "",
         "notes": [
             {
                 "id": "note-0",

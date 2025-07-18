@@ -181,3 +181,5 @@ cython_debug/
 .cursorindexingignore
 api-key.py
 api_key.py
+test.js
+test.py

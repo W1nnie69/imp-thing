@@ -35,6 +35,7 @@ def load_usr_data(username):
         default_workspace = [{
             "workspace_id": 1,
             "workspace_name": "Default",
+            "class": "",
             "notes": []
         }]
         with open(filepath, "w") as f:
@@ -46,60 +47,6 @@ def write_user_data(username, data):
     filepath = f"./usr-data/{username}.json"
     with open(filepath, "w") as f:
         json.dump(data, f, indent=4)
-
-
-def load_workspaces():
-    if os.path.exists("workspaces.json"):
-        with open("workspaces.json", "r") as f:
-            content = f.read().strip()
-            if content:
-                try:
-                    data = json.loads(content)
-                    if isinstance(data, list):
-                        return data
-                    else:
-                        return []
-                except json.JSONDecodeError:
-                    return []
-            else:
-                return []
-    else:
-        return []
-    
-
-def load_notes():
-    print("Attempting to load notes...")  # <---- add this
-    if os.path.exists("notes.json"):
-        with open("notes.json", "r") as f:
-            content = f.read().strip()
-            print("Raw notes.json content:", content)  # <---- add this too
-            if content:
-                try:
-                    data = json.loads(content)
-                    print("Parsed data:", data)  # <---- and this
-                    if isinstance(data, list):
-                        return data
-                    else:
-                        return []
-                except json.JSONDecodeError as e:
-                    print("JSON Decode Error:", e)
-                    return []
-            else:
-                print("notes.json is empty")
-                return []
-    else:
-        print("notes.json file not found")
-        return []
-
-
-def write_workspaces_to_file(workspaces):
-    with open("workspaces.json", "w") as f:
-        json.dump(workspaces, f, indent=4)
-    
-
-def write_notes_to_file(notes):
-    with open("notes.json", "w") as f:
-        json.dump(notes, f, indent=4)
 
 
 @app.route("/")
@@ -173,6 +120,11 @@ def workspace():
     return render_template("workspace.html")
 
 
+@app.route("/peer_review")
+def peer_review():
+    return render_template("peer_review.html")
+
+
 @app.route("/api/notes", methods=["GET"])
 def get_notes():
     username = session.get("username")
@@ -240,6 +192,32 @@ def ask_deepseek():
     else:
         print(response)
         return jsonify({"suggestions": response})
+
+
+@app.route("/api/class", methods=["GET", "POST"])
+def handle_class():
+    username = session.get("username")
+    if not username:
+        return jsonify({"error": "Not logged in"}), 401
+
+    data = load_usr_data(username)
+
+    # Find the workspace with ID 1
+    target_ws = next((ws for ws in data if ws["workspace_id"] == 1), None)
+    if not target_ws:
+        return jsonify({"error": "Workspace not found"}), 404
+
+    if request.method == "GET":
+        return jsonify({"class": target_ws.get("class", "")})
+
+    if request.method == "POST":
+        payload = request.get_json()
+        new_class = payload.get("class", "")
+        target_ws["class"] = new_class
+        write_user_data(username, data)
+        return jsonify({"status": "saved"})
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Creative Editor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    #canvas {
+        width: 100%;
+        height: 80vh;
+        border: 1px solid #ccc;
+        position: relative;
+        overflow: hidden;
+        margin-top: 5px;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: #111;
+      color: #f0f0f0;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .home-icon {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 24px;
+      color: #ccc;
+      text-decoration: none;
+      z-index: 10;
+    }
+
+    .container {
+      display: flex;
+      width: 100%;
+      padding-top: 60px;
+    }
+
+    .sidebar-left {
+      width: 200px;
+      background-color: #1c1c1c;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      border-right: 1px solid #2a2a2a;
+    }
+
+    .sidebar-left button {
+      padding: 10px;
+      background: #2a2a2a;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .sidebar-left button:hover {
+      background: #444;
+    }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .main-content input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      background: #2b2b2b;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 16px;
+    }
+
+    .sidebar-right {
+      width: 350px;
+      background-color: #1c1c1c;
+      padding: 20px;
+      border-left: 1px solid #2a2a2a;
+      overflow-y: auto;
+    }
+
+    .sidebar-right h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: #ccc;
+    }
+
+    .suggestion {
+      margin-bottom: 15px;
+      background: #2a2a2a;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .suggestion a {
+      color: #80d8ff;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .suggestion a:hover {
+      text-decoration: underline;
+    }
+
+    .suggestion p {
+      white-space: pre-wrap;
+    }
+
+  </style>
+</head>
+<body>
+
+  <a href="/dashboard" class="home-icon">🏠</a>
+
+  <div class="container">
+
+    <div class="sidebar-left">
+      <button>Create Drawing</button>
+      <button>Add Text</button>
+      <button>Insert Image</button>
+      <button>Insert Table</button>
+      <button id="askAiButton" onclick="sendNotesToAIHelper()">Ask AI</button>
+    </div>
+
+    <div class="main-content">
+      <!-- <input type="text" placeholder="Enter your title here..." /> -->
+      <!-- You can add editable content or canvas here -->
+       <p style="color:#777;">Start creating your notes, drawings, or projects here.</p>
+      <div id="canvas"></div>
+      
+    </div>
+
+    <div class="sidebar-right">
+      <h3>Comments</h3>
+      <div class="suggestion">
+        <p></p>
+      </div>
+      <!-- <div class="suggestion">
+        <strong>The Organic Chemistry Tutor</strong><br>
+        <a href="https://www.youtube.com/@TheOrganicChemistryTutor" target="_blank">YouTube Channel</a>
+      </div>
+      <div class="suggestion">
+        <strong>CrashCourse</strong><br>
+        <a href="https://www.youtube.com/@CrashCourse" target="_blank">YouTube Channel</a>
+      </div> -->
+    </div>
+
+  </div>
+
+  <script>
+    
+  </script>
+
+
+
+</body>
+</html>

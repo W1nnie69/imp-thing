@@ -183,6 +183,8 @@
     let debounceTimers = {};
     let debounceTimer;
     let tooltipHideTimeout;
+    let breakTimer;
+    const BREAK_INTERVAL = 2000; //2 secs
 
     // Create a note element from data (for loading saved notes)
     function createNote(data) {
@@ -452,9 +454,64 @@
     });
 
 
+    function startBreakTimer() {
+      clearTimeout(breakTimer); // Clear any existing timer
+      console.log("Starting timer");
 
-    window.onload = loadNotesFromServer();
+      breakTimer = setTimeout(() => {
+        console.log("Time for a break!");
+        showBreakPrompt();
+      }, BREAK_INTERVAL);
+    }
+    
 
+    function showBreakPrompt() {
+      if (confirm("You've been working for an hour! Take a short break?")) {
+        // Only restart the timer *after* the user acknowledges
+        // startBreakTimer();
+        fetch('/api/class')
+          .then(res => res.json())
+          .then(data => {
+            var className = data.class;
+      
+            if (className) {
+              if (confirm("Its time for peer review!")) {
+              console.log("OK PEER REVIEW");
+              window.location.href = "{{ url_for('peer_review') }}";
+
+              }
+            } else {
+              console.log("Bro got no class LOL");
+            }
+          })
+          .catch(error => {
+            console.error("Failed to fetch class:", error)
+          });
+      
+
+      } else {
+        // You can decide to restart it or not depending on your UX
+        startBreakTimer();
+      }
+    }
+
+
+    // Reset the timer *only when there's activity*
+    ["click", "keydown", "scroll"].forEach(evt => {
+      document.addEventListener(evt, () => {
+        console.log("User activity detected, resetting timer");
+        startBreakTimer();
+      });
+    });
+
+
+    window.onload = function() {
+      loadNotesFromServer();
+      startBreakTimer();
+    };
+  
+
+    
     // Button to add new note (assuming it's the second button in sidebar-left)
     document.querySelectorAll(".sidebar-left button")[1].addEventListener("click", () => {
       createNote({ id: "note-" + noteCounter++, content: "New Note"});
