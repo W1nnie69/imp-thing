@@ -100,6 +100,20 @@
       color: #ccc;
     }
 
+    .sidebar-right button {
+      padding: 10px;
+      background: #2a2a2a;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .sidebar-right button:hover {
+      background: #444;
+    }
+
     .suggestion {
       margin-bottom: 15px;
       background: #2a2a2a;
@@ -118,7 +132,10 @@
     }
 
     .suggestion p {
-      white-space: pre-wrap;
+      white-space: pre-wrap;  /* Preserve whitespace and line breaks */
+      word-wrap: break-word;  /* Break long words to avoid overflow */
+      overflow-wrap: break-word; /* Modern equivalent of word-wrap */
+      hyphens: auto; /* Adds hyphens when words break, optional */
     }
 
   </style>
@@ -129,41 +146,233 @@
 
   <div class="container">
 
-    <div class="sidebar-left">
+    <!-- <div class="sidebar-left">
       <button>Create Drawing</button>
       <button>Add Text</button>
       <button>Insert Image</button>
       <button>Insert Table</button>
       <button id="askAiButton" onclick="sendNotesToAIHelper()">Ask AI</button>
-    </div>
+    </div> -->
 
     <div class="main-content">
-      <!-- <input type="text" placeholder="Enter your title here..." /> -->
-      <!-- You can add editable content or canvas here -->
-       <p style="color:#777;">Start creating your notes, drawings, or projects here.</p>
+        <!-- <input type="text" placeholder="Enter your title here..." /> -->
+        <!-- You can add editable content or canvas here -->
+        <!-- <p style="color:#777;">Start creating your notes, drawings, or projects here.</p> -->
+      <h2 id="peer-name" style="margin-bottom: 1%; font-weight: bold;"></h2>
       <div id="canvas"></div>
       
     </div>
 
     <div class="sidebar-right">
       <h3>Comments</h3>
-      <div class="suggestion">
-        <p></p>
-      </div>
+      <button id="add-comment" style="margin-bottom: 4%;">Add Comments</button>
       <!-- <div class="suggestion">
-        <strong>The Organic Chemistry Tutor</strong><br>
-        <a href="https://www.youtube.com/@TheOrganicChemistryTutor" target="_blank">YouTube Channel</a>
-      </div>
-      <div class="suggestion">
-        <strong>CrashCourse</strong><br>
-        <a href="https://www.youtube.com/@CrashCourse" target="_blank">YouTube Channel</a>
+        <p>dsdsd</p>
+        <p>qwqwqw</p>
       </div> -->
+      <ul id="comment-list" style="margin-top: 10px;"></ul>
     </div>
 
   </div>
 
   <script>
-    
+    function createNote(data) {
+      const canvas = document.getElementById("canvas");
+      const noteId = data.id || "note-" + noteCounter++;
+
+      const defaultColor = "#232323";
+
+      if (document.getElementById(noteId)) return;
+
+      const note = document.createElement("div");
+      note.className = "note";
+      note.id = noteId;
+      note.style.position = "absolute";
+      note.style.top = data.top || Math.random() * 300 + "px";
+      note.style.left = data.left || Math.random() * 500 + "px";
+      note.style.width = data.width || "150px";
+      note.style.height = data.height || "150px";
+      note.style.background = data.color || defaultColor;
+      note.style.border = "1px solid #999";
+      note.style.boxShadow = "2px 2px 5px rgba(0,0,0,0.3)";
+      note.style.resize = "none";
+      note.style.overflow = "auto";
+      note.style.display = "flex";
+      note.style.flexDirection = "column";
+      note.style.borderRadius = "8px";
+
+      const handle = document.createElement("div");
+      handle.className = "handle";
+      handle.style.background = data.color || defaultColor;
+      handle.style.padding = "6px";
+      // handle.style.cursor = "grab";
+      handle.style.userSelect = "none";
+      handle.style.fontWeight = "bold";
+
+      // const colorInput = document.createElement("input");
+      // colorInput.type = "color";
+      // colorInput.value = data.color || "#242323";
+      // colorInput.style.marginLeft = "6px";
+      // colorInput.style.cursor = "pointer";
+      // colorInput.style.width = "20px";
+      // colorInput.style.height = "20px";
+      // colorInput.style.border = "none";
+      // colorInput.style.padding = "0";
+      // colorInput.style.background = "none";
+      // colorInput.style.outline = "none";
+
+      // colorInput.addEventListener("input", () => {
+      //   note.style.backgroundColor = colorInput.value;
+      //   handle.style.backgroundColor = colorInput.value;
+      //   // saveCurrentNote(); // You can remove or disable this for peer review
+      // });
+
+      // handle.appendChild(colorInput);
+
+      const content = document.createElement("div");
+      content.className = "content";
+      content.contentEditable = false; // prevent editing during peer review
+      content.innerText = data.content || "New Note";
+      content.style.flex = "1";
+      content.style.padding = "8px";
+      content.style.overflowY = "auto";
+      content.style.overflowX = "hidden";
+      content.style.wordWrap = "break-word";
+      content.style.whiteSpace = "pre-wrap";
+      content.style.borderTop = "1px solid #ddd";
+
+      note.appendChild(handle);
+      note.appendChild(content);
+      canvas.appendChild(note);
+    }
+
+    let peerUsername = "";
+
+    function loadNotesFromServer() {
+      fetch('/api/peer_notes')
+        .then(response => response.json())
+        .then(received => {
+          if (!Array.isArray(received)) return;
+
+          peerUsername = received.pop(); // extract and save peer's username
+          document.getElementById("peer-name").innerText = `Reviewing notes by: ${peerUsername}`;
+          
+          received.forEach(data => createNote(data));
+          
+          // ✅ Now that peerUsername is known, we can load the comments
+          loadCommentsFromServer();
+        });
+    }
+
+
+
+    // Call this function when the comment is submitted
+    function saveComment(textarea) {
+      const comment = textarea.value.trim();
+
+      if (!comment) {
+        alert("Please enter a comment.");
+        return;
+      }
+
+      fetch("/api/save_comment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          comment: comment,
+          peer_username: peerUsername,
+        }),
+      })
+      .then(response => {
+        if (!response.ok) throw new Error("Failed to save comment.");
+        return response.json();
+      })
+      .then(data => {
+        // alert("Comment saved successfully.");
+        textarea.value = "";
+      })
+      .catch(error => {
+        console.error(error);
+        alert("Error saving comment.");
+      });
+    }
+
+
+    function loadCommentsFromServer() {
+      if (!peerUsername) {
+        console.error("Peer username not found.");
+        return;
+      }
+
+      fetch(`/api/load_comments?username=${peerUsername}`)
+        .then(response => response.json())
+        .then(comments => {
+          const sidebar = document.querySelector(".sidebar-right");
+          
+          // Remove all existing loaded comment boxes, but keep the "Add Comments" button
+          // We assume the first child is the <h3>, second is the button, so remove everything after that
+          while (sidebar.children.length > 2) {
+            sidebar.removeChild(sidebar.lastChild);
+          }
+
+          comments.forEach(text => {
+            const commentBox = document.createElement("div");
+            commentBox.className = "suggestion";
+
+            const p = document.createElement("p");
+            p.innerText = text;
+
+            commentBox.appendChild(p);
+            sidebar.appendChild(commentBox);
+          });
+        })
+        .catch(error => {
+          console.error("Error loading comments:", error);
+        });
+    }
+
+
+
+    // Run on page load
+    window.onload = () => {
+    loadNotesFromServer();  };
+
+    document.getElementById("add-comment").addEventListener("click", () => {
+      const commentBox = document.createElement("div");
+      commentBox.className = "suggestion";
+
+      const textarea = document.createElement("textarea");
+      textarea.placeholder = "Write your comment here...";
+      textarea.style.width = "100%";
+      textarea.style.height = "60px";
+      textarea.style.background = "#2b2b2b";
+      textarea.style.color = "white";
+      textarea.style.border = "1px solid #444";
+      textarea.style.borderRadius = "6px";
+      textarea.style.padding = "6px";
+      textarea.style.marginBottom = "6px";
+      textarea.style.resize = "none";
+
+      const saveButton = document.createElement("button");
+      saveButton.innerText = "Save";
+      saveButton.style.marginTop = "4px";
+      saveButton.onclick = () => {
+        if (textarea.value.trim() !== "") {
+          const finalComment = document.createElement("p");
+          finalComment.innerText = textarea.value;
+          commentBox.innerHTML = "";
+          commentBox.appendChild(finalComment);
+          saveComment(textarea);  // pass the textarea directly
+        }
+      };
+
+      commentBox.appendChild(textarea);
+      commentBox.appendChild(saveButton);
+
+      document.querySelector(".sidebar-right").appendChild(commentBox);
+    });
   </script>
 
 

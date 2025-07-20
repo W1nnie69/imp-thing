@@ -4,6 +4,7 @@ import os
 import time
 import requests
 import deepseek as ds
+import random
 
 app = Flask(__name__)
 app.secret_key = 'super-secret-key-123'
@@ -125,6 +126,11 @@ def peer_review():
     return render_template("peer_review.html")
 
 
+@app.route("/test")
+def test():
+    return render_template("test.html")
+
+
 @app.route("/api/notes", methods=["GET"])
 def get_notes():
     username = session.get("username")
@@ -197,8 +203,7 @@ def ask_deepseek():
 @app.route("/api/class", methods=["GET", "POST"])
 def handle_class():
     username = session.get("username")
-    if not username:
-        return jsonify({"error": "Not logged in"}), 401
+    if not username:        return jsonify({"error": "Not logged in"}), 401
 
     data = load_usr_data(username)
 
@@ -216,7 +221,86 @@ def handle_class():
         target_ws["class"] = new_class
         write_user_data(username, data)
         return jsonify({"status": "saved"})
+    
 
+@app.route("/api/peer_notes", methods=["GET"])
+def peer_notes():
+    classmates = []
+
+    current_user = session.get("username")
+    if not current_user:
+        return jsonify({"error": "not logged in"})
+
+    current_user_data = load_usr_data(current_user)
+
+    for ws in current_user_data:
+        if ws["class"]:
+            current_user_class = ws["class"]
+            break
+
+    PATH = "./usr-data/"
+    for file in os.listdir(PATH):
+        filename = file.removesuffix(".json")
+
+        if filename != current_user:
+            data = load_usr_data(filename)
+
+            for ws2 in data:
+                if ws2["class"] == current_user_class:
+                    classmates.append(filename)
+
+    print(classmates)
+    seed = random.randint(0, len(classmates))
+
+    peer_data = load_usr_data(classmates[seed - 1])
+    notes = []
+
+    for ws3 in peer_data:
+        notes.extend(ws3["notes"])
+
+    notes.append(classmates[seed - 1])
+
+    print(peer_data)
+    print("")
+    print(notes)
+
+    return jsonify(notes)
+
+
+@app.route("/api/save_comment", methods=["POST"])
+def save_comment():
+    data = request.get_json()
+    comments = data["comment"]
+    peer_username = data["peer_username"]
+
+    if not comments or not peer_username:
+        return jsonify({"error": "Missing data"}), 400
+
+    usr_data = load_usr_data(peer_username)
+
+    if not usr_data:
+        return jsonify({"error": "User data not found"}), 404
+    
+    usr_data[0].setdefault("comments", []).append(comments)
+
+    write_user_data(peer_username, usr_data)
+    return jsonify({"message": "Comment saved"}), 200
+
+
+@app.route("/api/load_comments")
+def load_comment():
+    peer_username = request.args.get('username')
+    if not peer_username:
+        return jsonify({"error": "No username provided"}), 400
+
+    peer_data = load_usr_data(peer_username)
+
+    all_comments = []
+    for ws in peer_data:
+        if "comments" in ws:
+            all_comments.extend(ws["comments"])
+
+    return jsonify(all_comments)
 
 
 if __name__ == '__main__':

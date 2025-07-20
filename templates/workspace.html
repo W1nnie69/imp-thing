@@ -184,7 +184,7 @@
     let debounceTimer;
     let tooltipHideTimeout;
     let breakTimer;
-    const BREAK_INTERVAL = 2000; //2 secs
+    const BREAK_INTERVAL = 5000; //5 secs
 
     // Create a note element from data (for loading saved notes)
     function createNote(data) {
@@ -482,6 +482,7 @@
               }
             } else {
               console.log("Bro got no class LOL");
+              startBreakTimer();
             }
           })
           .catch(error => {
@@ -497,12 +498,12 @@
 
 
     // Reset the timer *only when there's activity*
-    ["click", "keydown", "scroll"].forEach(evt => {
-      document.addEventListener(evt, () => {
-        console.log("User activity detected, resetting timer");
-        startBreakTimer();
-      });
-    });
+    // ["click", "keydown", "scroll"].forEach(evt => {
+    //   document.addEventListener(evt, () => {
+    //     console.log("User activity detected, resetting timer");
+    //     startBreakTimer();
+    //   });
+    // });
 
 
     window.onload = function() {
