@@ -2,6 +2,7 @@
     {
         "workspace_id": 1,
         "workspace_name": "Default",
+        "class": "P02",
         "notes": [
             {
                 "id": "note-0",
@@ -15,8 +16,8 @@
             {
                 "id": "note-2",
                 "content": "Python notes:\n\n1) list = [1,2,3]\n2) dict = [\"key\" : \"value\"]",
-                "top": "41px",
-                "left": "103px",
+                "top": "40px",
+                "left": "92px",
                 "color": "#242323",
                 "width": "217px",
                 "height": "177px"
@@ -24,8 +25,8 @@
             {
                 "id": "note-3",
                 "content": "WOW it works!",
-                "top": "33px",
-                "left": "610px",
+                "top": "42px",
+                "left": "588px",
                 "color": "#242323",
                 "width": "150px",
                 "height": "150px"

@@ -20,6 +20,22 @@
         margin-top: 5px;
     }
 
+    #break-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7); /* semi-transparent dark background */
+      color: white;
+      font-size: 2em;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      display: none;
+    }
+
     body {
       font-family: 'Montserrat', sans-serif;
       background-color: #111;
@@ -161,6 +177,12 @@
       
     </div>
 
+    <div id="break-overlay">
+      Take a short break…
+      <br>
+      <button onclick="cancelBreak()">Skip</button>
+    </div>
+
     <div class="sidebar-right">
       <h3>Ai-Suggestions</h3>
       <div class="suggestion">
@@ -183,6 +205,8 @@
     let debounceTimers = {};
     let debounceTimer;
     let tooltipHideTimeout;
+    let breakTimer;
+    const BREAK_INTERVAL = 10000; //5 secs
 
     // Create a note element from data (for loading saved notes)
     function createNote(data) {
@@ -452,9 +476,69 @@
     });
 
 
+    function startBreakTimer() {
+      clearTimeout(breakTimer); // Clear any existing timer
+      console.log("Starting timer");
 
-    window.onload = loadNotesFromServer();
+      breakTimer = setTimeout(() => {
+        console.log("Time for a break!");
+        showBreakPrompt();
+      }, BREAK_INTERVAL);
+    }
+    
 
+    function showBreakPrompt() {
+      if (confirm("You've been working for an hour! Take a short break?")) {
+        const overlay = document.getElementById("break-overlay");
+        overlay.style.display = "flex";
+
+        breakTimeout = setTimeout(() => {
+          continueAfterBreak();
+        }, 5000);
+      }
+    }
+
+
+    function cancelBreak() {
+      clearTimeout(breakTimeout); // cancel the timeout
+      document.getElementById("break-overlay").style.display = "none";
+      startBreakTimer(); // or whatever fallback logic
+    }
+
+
+    function continueAfterBreak() {
+      fetch('/api/class')
+        .then(res => res.json())
+        .then(data => {
+          const className = data.class;
+
+          if (className) {
+            if (confirm("It's time for peer review!")) {
+              window.location.href = "{{ url_for('peer_review') }}";
+            } else {
+              document.getElementById("break-overlay").style.display = "none";
+              startBreakTimer();
+            }
+          } else {
+            document.getElementById("break-overlay").style.display = "none";
+            startBreakTimer();
+          }
+        })
+        .catch(error => {
+          console.error("Failed to fetch class:", error);
+          document.getElementById("break-overlay").style.display = "none";
+        });
+    }
+
+
+
+    window.onload = function() {
+      loadNotesFromServer();
+      startBreakTimer();
+    };
+  
+
+    
     // Button to add new note (assuming it's the second button in sidebar-left)
     document.querySelectorAll(".sidebar-left button")[1].addEventListener("click", () => {
       createNote({ id: "note-" + noteCounter++, content: "New Note"});

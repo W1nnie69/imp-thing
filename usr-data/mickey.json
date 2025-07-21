@@ -2,6 +2,7 @@
     {
         "workspace_id": 1,
         "workspace_name": "Default",
+        "class": "P02",
         "notes": [
             {
                 "id": "note-0",
@@ -21,6 +22,14 @@
                 "width": "633px",
                 "height": "353px"
             }
+        ],
+        "comments": [
+            "testing",
+            "sdesrdfgaergaerg",
+            "i think ur notes are bland",
+            "test2",
+            "sdsd",
+            "Fucking finally"
         ]
     }
 ]

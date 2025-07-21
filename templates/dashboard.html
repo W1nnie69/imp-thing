@@ -136,6 +136,7 @@
   <div class="sidebar">
     
     <a href="/dashboard"><span class="icon home-icon">🏠</span>Home</a>
+    <a href="#" onclick="test()">Enter a class/module group</a>
     <a href="/workspace">Create Workspace</a>
 
     <!-- Fucking stupid cant use <a> for post req -->
@@ -156,6 +157,7 @@
   <div class="main">
     <h1 class="username">{{ username }}'s Dashboard</h1>
     <div class="title">Your Subnotes</div>
+    
 
     <div class="note-grid">
 
@@ -184,6 +186,59 @@
 
     </div>
   </div>
+  <script>
+    function test() {
+      
+      var usrclass = prompt("What is your class?");
+      if (usrclass) {
+        alert("Saved class: " + usrclass);
+
+        fetch("/api/class", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            class: usrclass
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === "saved") {
+            console.log("Class saved successfully.");
+          } else {
+            console.error("failed to save class");
+          }
+        })
+        .catch(error => {
+          console.error("Error:", error)
+        });
+
+      } else {
+
+        fetch("/api/class", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            class: ""
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === "saved") {
+            console.log("Class saved successfully.");
+          } else {
+            console.error("failed to save class");
+          }
+        })
+        .catch(error => {
+          console.error("Error:", error)
+        });
+      }
+    }
+  </script>
 
 </body>
 </html>
